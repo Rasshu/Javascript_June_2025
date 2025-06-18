@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // let url = window.location.search;
+
+        // let id = url.split("="); // convert strint into array based on =
+        // id = id[1];
+        // document.write(`Edit user, id is ${id}`);
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+        document.write(`<div class="alert alert-primary mt-2" role="alert">Edit user, id is ${id}</div>`);
+
+        /*
+            split function - convert string into array 
+            join - convert array into string
+        */
+
+    </script>
+
+    <form id="editForm" novalidate>
+        Fullname <input type="text" name="fullname" id="fullname">
+        Email <input type="email" name="email" id="email">
+        <input type="submit" value="Save">
+    </form>
+
+    <script>
+        // let users = JSON.parse(localStorage.getItem('users'));
+        // console.log(users);
+        // console.log(id);
+
+        // id = parseInt(id);
+
+        // /*
+        //     Filter users based on id and display value in HTML Form
+        //     When we click on save button, update users localstorage, set item again in local storage
+        // */
+        // let user = users.find(u => u.id === id);
+        // console.log(user);
+        // if (user) {
+        //     document.getElementById("fullname").value = user.name;
+        //     document.getElementById("email").value = user.email;
+        // }
+
+
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const currentUser = users.find(u => u.id == id);
+
+        if (currentUser) {
+            document.getElementById("fullname").value = currentUser.fullname;
+            document.getElementById("email").value = currentUser.email;
+        }
+
+        document.getElementById("editForm").onsubmit = function (e) {
+            e.preventDefault(); // stop page refresh
+
+            const updatedName = document.getElementById("fullname").value;
+            const updatedEmail = document.getElementById("email").value;
+
+            const index = users.findIndex(u => u.id === id);
+            if (index !== -1) {
+                users[index].fullname = updatedName;
+                users[index].email = updatedEmail;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert("User updated!");
+                window.location.href = "./Userlist.html";
+            }
+        };
+    </script>
+
+    <!-- <a href="./UserList.html"> back to homepage</a> -->
+</body>
+
+</html>
