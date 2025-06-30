@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupchat</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">UserApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./Groupchat.html">Group Chat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./UserList.html">Manage Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./DocumentList.html">Manage Documents</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="./Welcome.html">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div class="container">
+        <form id="chatForm">
+            <h1>GroupChat</h1>
+            <div class="row">
+                <div class="mb-3">
+                    <h4 class="text-center">Group Chat</h4>
+                        <table id="tblmessage" class="table table-bordered text-center align-middle" style="max-height: 300px;
+                        overflow-y: auto;
+                        border: 1px solid #ccc;
+                        margin: 20px auto;
+                        width: 80%;width: 100%;
+                        border-collapse: collapse;
+                        text-align: center;">
+                            <tbody id="tblmessagebody">
+                                
+                            </tbody>
+                        </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-auto">
+                    <label for="userName" id="lblusername" class="col-form-label"></label>
+                </div>
+
+                <!-- Column 2: Input -->
+                <div class="col">
+                    <input type="text" id="txtmessage" placeholder="enter message here..." class="form-control" />
+                </div>
+
+                <!-- Column 3: Button -->
+                <div class="col-auto">
+                    <button type="submit" id="btnmessage" class="btn btn-primary" >Send</button>
+                    <input type="Button" class="btn btn-primary" value="Refresh" />
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <script>
+        document.getElementById("lblusername").textContent = sessionStorage.getItem("username");
+
+        let username = sessionStorage.getItem("username");
+        document.getElementById("btnmessage").addEventListener("click", async function (event) {
+    //    async function SendMessage() {
+        event.preventDefault(); // Stop default form submission
+        debugger;
+            let message = document.getElementById("txtmessage").value;
+            if (message == "") {
+                alert("enter Message");
+                return false;
+            }
+
+            let messageobj = {
+                UserName: username,
+                Message: message,
+                Date: new Date()
+                    }
+        
+                    fetch("https://localhost:7030/api/User/sendmessage", {
+                        method: "POST",
+                        headers: { "content-Type": "application/json" },
+                        body: JSON.stringify(messageobj)
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error("Invalid login");
+                        }
+                        return response.json();
+                    }).then(data => {
+                        console.log("Message Sent");
+                        location.reload();
+               
+                    }).catch(err => {
+                        alert("Login failed: " + err.message);
+                    });
+
+        });
+
+
+document.addEventListener("DOMContentLoaded", async function () {
+
+    let response = await fetch('https://localhost:7030/api/User/getMessages')  
+    let usermessage = await response.json();
+    debugger;
+    let tableBody = document.getElementById("tblmessagebody");
+
+    usermessage.forEach(message => {
+        let row = document.createElement("tr");
+        row.style.textAlign = "left";
+        row.innerHTML = `
+          ${message.date}  
+          ${message.userName}  :
+          ${message.message}`;
+        tableBody.appendChild(row);
+    });
+});
+
+    </script>
+
+
+</body>
+
+</html>
